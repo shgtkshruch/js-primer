@@ -1,0 +1,86 @@
+version: 1
+rules:
+
+# 大文字小文字全角半角の統一
+  - expected: Cookie
+# 以下と等価 正規表現には強制でgフラグが付く
+# - expected: Cookie
+#   pattern: "/[CcＣｃ][OoＯｏ][OoＯｏ][KkＫｋ][IiＩｉ][EeＥｅ]/g"
+#   options:
+#     wordBoundary: false
+#   specs: []
+
+# 正規表現で置換もできる
+  - expected: JavaScript
+    patterns:
+      - javascript
+    options:
+      wordBoundary: true
+    specs:
+      - from: javascript
+        to:   JavaScript
+
+  - expected: ECMAScript $1
+    pattern: /ECMAScript([0-9]+)/
+# 変換結果についてテストも書ける
+  - expected: jQuery
+    specs:
+      - from: jquery
+        to:   jQuery
+      - from: ＪＱＵＥＲＹ
+        to:   jQuery
+
+# 変換結果が期待通りではなかった場合、ルールのロードに失敗する
+# - expected: JavaScript
+#   specs:
+#     - from: JAVASCRIPT
+#       to:   JavaScprit # この場合はテスト側が間違ってる！
+# Error: JavaScript spec failed. "JAVASCRIPT", expected "JavaScprit", but got "JavaScript", /[JjＪｊ][AaＡａ][VvＶｖ][AaＡａ][SsＳｓ][CcＣｃ][RrＲｒ][IiＩｉ][PpＰｐ][TtＴｔ]/g
+
+# 表現の統一を図る
+  - expected: デフォルト
+    pattern:  ディフォルト
+
+# patternは複数記述可能
+  - expected: ハードウェア
+    pattern:
+      - ハードウエアー
+      - ハードウエア   # 正規表現に変換する都合上短いものを後に書いたほうがよい
+      - ハードウェアー
+
+# patternには正規表現が利用可能 否定戻り先読みが欲しい…(JSにはない
+  - expected: $1ソフトウェア
+    pattern:  /([^経])ソフトウエア/
+    specs:
+      # 普通に変換
+      - from: 広義のソフトウエア
+        to:   広義のソフトウェア
+      # 日経ソフトウエア(書名)は変換しない
+      - from: 日経ソフトウエア
+        to:   日経ソフトウエア
+
+# Project
+  # http://www.ecma-international.org/ecma-262/6.0/#sec-comments
+  # MultiLineComment
+  # SingleLineComment
+  - expected: 一行コメント
+    patterns:
+      - 1行コメント
+      - ワンラインコメント
+  - expected: $1一行コメント
+    patterns: /([^1一数])行コメント/
+  - expected: 複数行コメント
+    patterns:
+      - ブロックコメント
+      - マルチラインコメント
+# typo
+  - expected: $1進数
+    patterns:
+      - /(\d+)真数/
+  - expected: 同じ変数名を
+    patterns:
+      - /同じ変数を/
+# 文体
+  - expected: どのように
+    patterns:
+      - どうやって
